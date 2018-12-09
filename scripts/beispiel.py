@@ -12,9 +12,11 @@ names = []
 
 def load_face_encoding(name, file_name):
     image = face_recognition.load_image_file(file_name)
-    face_encoding = face_recognition.face_encodings(image)[0]
-    known_face_encodings.append(face_encoding)
-    names.append(name)
+    face_encoding = face_recognition.face_encodings(image)
+    if len(face_encoding) > 0:
+        known_face_encodings.append(face_encoding[0])
+        names.append(name)
+        print("Image loaded: {}".format(name))
 
 # Get a reference to the Raspberry Pi camera.
 # If this fails, make sure you have a camera connected to the RPi and that you
@@ -24,9 +26,10 @@ camera.resolution = (320, 240)
 output = np.empty((240, 320, 3), dtype=np.uint8)
 
 # Load a sample picture and learn how to recognize it.
-print("Bilder werden geladen")
-load_face_encoding("Angela Merkel", os.path.dirname(os.path.abspath(__file__))+"/bilder/person1.jpg")
-load_face_encoding("Horst Seehofer", os.path.dirname(os.path.abspath(__file__))+"/bilder/person2.jpg")
+print("Bilder werden geladen aus {}".format(os.path.dirname(os.path.abspath(__file__))+"/bilder/"))
+load_face_encoding("Stefan", os.path.dirname(os.path.abspath(__file__))+"/bilder/beffy.jpg")
+load_face_encoding("Erik", os.path.dirname(os.path.abspath(__file__))+"/bilder/erik.jpg")
+load_face_encoding("Mika", os.path.dirname(os.path.abspath(__file__))+"/bilder/mika.jpg")
 
 # Initialize some variables
 face_locations = []
@@ -42,16 +45,18 @@ while True:
     print("Found {} faces in image.".format(len(face_locations)))
     face_encodings = face_recognition.face_encodings(output, face_locations)
 
-    # Loop over each face found in the frame to see if it's someone we know.
-    for face_encoding in face_encodings:
-        # See if the face is a match for the known face(s)
-        matches = face_recognition.face_distance(known_face_encodings, face_encoding)
-        name = "einen Unbekannten"
+    if len(face_encodings) > 0:
         
-        min_distance = min(matches)
-        if min_distance < 0.6:
-            i = matches.argmin()
-            name = names[i]
+        # Loop over each face found in the frame to see if it's someone we know.
+        for face_encoding in face_encodings:
+            # See if the face is a match for the known face(s)
+            matches = face_recognition.face_distance(known_face_encodings, face_encoding)
+            name = "einen Unbekannten"
+        
+            min_distance = min(matches)
+            if min_distance < 0.6:
+                i = matches.argmin()
+                name = names[i]
             
         
         print("Ich sehe {}!".format(name))
