@@ -15,6 +15,19 @@ from imutils.video import FPS
 # OpenCV is *not* required to use the face_recognition library. It's only required if you want to run this
 # specific demo. If you have trouble installing it, try any of the other demos that don't require it instead.
 
+known_face_encodings = []
+known_face_names = []
+
+def load_face_encoding(name, file_name):
+    image = face_recognition.load_image_file(file_name)
+    face_encoding = face_recognition.face_encodings(image)
+    if len(face_encoding) > 0:
+        known_face_encodings.append(face_encoding[0])
+        known_face_names.append(name)
+        print("Image loaded: {}".format(name))
+    else:
+        print("Unable load image: {}".format(name))        
+
 # Get a reference to webcam #0 (the default one)
 #video_capture = cv2.VideoCapture(0)
 #video_capture = VideoStream(src=0).start()
@@ -22,28 +35,11 @@ from imutils.video import FPS
 video_capture = VideoStream(usePiCamera=True).start()
 time.sleep(2.0)
 
-# Load a sample picture and learn how to recognize it.
-beffy_image = face_recognition.load_image_file(os.path.dirname(os.path.abspath(__file__))+"/../bilder/beffy.jpg")
-beffy_face_encoding = face_recognition.face_encodings(beffy_image)[0]
-
-# Load a second sample picture and learn how to recognize it.
-erik_image = face_recognition.load_image_file(os.path.dirname(os.path.abspath(__file__))+"/../bilder/erik.jpg")
-erik_face_encoding = face_recognition.face_encodings(erik_image)[0]
-
-mika_image = face_recognition.load_image_file(os.path.dirname(os.path.abspath(__file__))+"/../bilder/mika.jpg")
-mika_face_encoding = face_recognition.face_encodings(mika_image)[0]
-
-# Create arrays of known face encodings and their names
-known_face_encodings = [
-    beffy_face_encoding,
-    erik_face_encoding,
-    mika_face_encoding
-]
-known_face_names = [
-    "Stefan",
-    "Erik",
-    "Mika"
-]
+print("Loading images from {}".format(os.path.dirname(os.path.abspath(__file__))+"/bilder/"))
+load_face_encoding("Stefan", os.path.dirname(os.path.abspath(__file__))+"/../bilder/beffy.jpg")
+load_face_encoding("Erik", os.path.dirname(os.path.abspath(__file__))+"/../bilder/erik.jpg")
+load_face_encoding("Mika", os.path.dirname(os.path.abspath(__file__))+"/../bilder/mika.jpg")
+load_face_encoding("Sonja", os.path.dirname(os.path.abspath(__file__))+"/../bilder/sonja.jpg")
 
 # Initialize some variables
 face_locations = []
@@ -75,7 +71,9 @@ while True:
         face_names = []
         for face_encoding in face_encodings:
             # See if the face is a match for the known face(s)
-            matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+            # default tolerance is 0.6, the lesser the stricter
+            tolerance = 0.5
+            matches = face_recognition.compare_faces(known_face_encodings, face_encoding, tolerance)
             name = "Unknown"
 
             # If a match was found in known_face_encodings, just use the first one.
@@ -84,7 +82,7 @@ while True:
                 name = known_face_names[first_match_index]
 
             face_names.append(name)
-            print("I see: {}".format(name))
+            print("Hello, {}".format(name))
 
     process_this_frame = not process_this_frame
 

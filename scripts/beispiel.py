@@ -26,17 +26,18 @@ camera.resolution = (320, 240)
 output = np.empty((240, 320, 3), dtype=np.uint8)
 
 # Load a sample picture and learn how to recognize it.
-print("Bilder werden geladen aus {}".format(os.path.dirname(os.path.abspath(__file__))+"/bilder/"))
-load_face_encoding("Stefan", os.path.dirname(os.path.abspath(__file__))+"/bilder/beffy.jpg")
-load_face_encoding("Erik", os.path.dirname(os.path.abspath(__file__))+"/bilder/erik.jpg")
-load_face_encoding("Mika", os.path.dirname(os.path.abspath(__file__))+"/bilder/mika.jpg")
+print("Loading images from {}".format(os.path.dirname(os.path.abspath(__file__))+"/bilder/"))
+load_face_encoding("Stefan", os.path.dirname(os.path.abspath(__file__))+"/../bilder/beffy.jpg")
+load_face_encoding("Erik", os.path.dirname(os.path.abspath(__file__))+"/../bilder/erik.jpg")
+load_face_encoding("Mika", os.path.dirname(os.path.abspath(__file__))+"/../bilder/mika.jpg")
+load_face_encoding("Sonja", os.path.dirname(os.path.abspath(__file__))+"/../bilder/sonja.jpg")
 
 # Initialize some variables
 face_locations = []
 face_encodings = []
 
 while True:
-    print("Bild aufnehmen.")
+    print("Taking picture.")
     # Grab a single frame of video from the RPi camera as a numpy array
     camera.capture(output, format="rgb")
 
@@ -51,7 +52,7 @@ while True:
         for face_encoding in face_encodings:
             # See if the face is a match for the known face(s)
             matches = face_recognition.face_distance(known_face_encodings, face_encoding)
-            name = "einen Unbekannten"
+            name = "a stranger"
         
             min_distance = min(matches)
             if min_distance < 0.6:
@@ -59,4 +60,4 @@ while True:
                 name = names[i]
             
         
-        print("Ich sehe {}!".format(name))
+        print("I see {}!".format(name))

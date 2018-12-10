@@ -29,6 +29,7 @@ In the container, change to "/face_recogition/example/scripts" and call:
 ```bash
 python beispiel.py
 ```
+Do not forget to add some images to the "bilder" folder and change the names in the scripts.
 
 To run a container with OpenCV support utilizing the x-server of the host, use this command:
 
