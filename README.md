@@ -53,4 +53,6 @@ You can now try to run
 python video.py
 ```
 
-in the container.
+in the container and you should have a little video window running:
+
+![OpenCV Video](facereg_video.png)
